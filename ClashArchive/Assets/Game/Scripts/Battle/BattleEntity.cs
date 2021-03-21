@@ -68,6 +68,12 @@ public class BattleEntity : MonoBehaviour
                 return;
             }
 
+            if (CurrentCombatTarget != null && _navMeshAgent.remainingDistance < 0.1f)
+            {
+                _navMeshAgent.isStopped = true;
+                _abilitySystem.TriggerNewAbility(CharacterTemplate.AutoAttackAbility);
+            }
+
             if (CurrentCombatTarget == null)
                 GetTarget();
 
@@ -77,12 +83,10 @@ public class BattleEntity : MonoBehaviour
                 _navMeshAgent.isStopped = false;
                 _navMeshAgent.SetDestination(CurrentMoveTarget);
             }
-
-            if (CurrentCombatTarget != null && _navMeshAgent.remainingDistance < 0.1f)
-            {
-                _navMeshAgent.isStopped = true;
-                _abilitySystem.TriggerNewAbility(CharacterTemplate.AutoAttackAbility);
-            }
+        }
+        else
+        {
+            CheckAlert();
         }
     }
 
@@ -127,6 +131,7 @@ public class BattleEntity : MonoBehaviour
         }
     }
 
+    #region Cover
     private CoverPosition GetCoverPosition()
     {
         if (CurrentCover != null && IsCoverValid(CurrentCover, false))
@@ -212,9 +217,43 @@ public class BattleEntity : MonoBehaviour
         Vector3 direction = (transform.position - enemyPosition).normalized;        
         return enemyPosition + (direction * CharacterStats.IdealAttackRange);
     }
+#endregion
+
+    private void CheckAlert()
+    {
+        foreach (var battleEntity in BattleModel.Instance.ActiveBattleEntities.Data)
+        {
+            if (battleEntity.Team == Team)
+                continue;
+
+            if (Vector3.Distance(transform.position, battleEntity.transform.position) < 10f)
+            {
+                SoundAlert();
+                return;
+            }
+        }
+    }
+
+    private void SoundAlert()
+    {
+        foreach (var battleEntity in BattleModel.Instance.ActiveBattleEntities.Data)
+        {
+            if (battleEntity.Team == Team && battleEntity != this)
+                battleEntity.OnDetectEnemy();
+        }
+    }
+
+    public void OnDetectEnemy()
+    {
+        isActive = true;
+    }
+
 
     public void TakeDamage(int damage)
     {
+        if (!isActive)
+            SoundAlert();
+
         _health -= damage;
         if (_health <= 0)
             Destroy(gameObject);

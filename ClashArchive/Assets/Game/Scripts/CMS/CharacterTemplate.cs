@@ -4,7 +4,7 @@ using UnityEngine;
 
 public enum CharacterRow
 {
-    Front, Middle, Back
+    Front, Middle, Back, Boss
 }
 
 [System.Serializable]
