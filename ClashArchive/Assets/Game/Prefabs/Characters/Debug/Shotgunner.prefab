@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 8779650248224243642}
   - component: {fileID: 8779650248224243643}
   m_Layer: 0
-  m_Name: Character
+  m_Name: Shotgunner
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -76,9 +76,25 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 8779650248224243637}
     m_Modifications:
+    - target: {fileID: 1211425551428825437, guid: 689d73a1e8ffb024495e5e430c903354, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: fed4e78bda2b3de45954637fee164b8c, type: 2}
     - target: {fileID: 2639667466430773696, guid: 689d73a1e8ffb024495e5e430c903354, type: 3}
       propertyPath: m_RootOrder
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2639667466430773696, guid: 689d73a1e8ffb024495e5e430c903354, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 2.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2639667466430773696, guid: 689d73a1e8ffb024495e5e430c903354, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 2.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2639667466430773696, guid: 689d73a1e8ffb024495e5e430c903354, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 2.5
       objectReference: {fileID: 0}
     - target: {fileID: 2639667466430773696, guid: 689d73a1e8ffb024495e5e430c903354, type: 3}
       propertyPath: m_LocalPosition.x
@@ -124,6 +140,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Muryotaisu No Scripts
       objectReference: {fileID: 0}
+    - target: {fileID: 3473628692184578881, guid: 689d73a1e8ffb024495e5e430c903354, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: fed4e78bda2b3de45954637fee164b8c, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 689d73a1e8ffb024495e5e430c903354, type: 3}
 --- !u!4 &7911627329162064680 stripped

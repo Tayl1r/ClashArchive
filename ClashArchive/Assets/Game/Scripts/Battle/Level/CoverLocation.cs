@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CoverPosition : MonoBehaviour
+public class CoverLocation : MonoBehaviour
 {
     public bool IsActive { private set; get; }
 

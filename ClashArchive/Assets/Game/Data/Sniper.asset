@@ -10,13 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a20b58d631a451745807fc090ae5b2da, type: 3}
-  m_Name: Character Template
+  m_Name: Sniper
   m_EditorClassIdentifier: 
   _characterName: Peko
-  _prefab: {fileID: 8779650248224243643, guid: efa3c171df916f848a8c4606fee356bb, type: 3}
+  _prefab: {fileID: 8779650248224243643, guid: dca08c0d793ea154585b5d0f087d0763, type: 3}
   _characterRow: 0
   _characterStats:
-    Health: 2968
+    Health: 14840
     Attack: 157
     Defence: 130
     MoveSpeed: 5
@@ -24,7 +24,7 @@ MonoBehaviour:
     ReloadTime: 1.05
     MaxAmmo: 10
     CoverBlockChance: 0.5
-    MaximumAttackRange: 10
-    IdealAttackRange: 6
+    MaximumAttackRange: 25
+    IdealAttackRange: 23
     AttackInterval: 0.5
   _autoAttackAbility: {fileID: 11400000, guid: f5edd61d05da8854a92388d37fd28fc6, type: 2}

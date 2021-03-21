@@ -17,7 +17,7 @@ public class BattleModel
     }
 
     public GameCollection<BattleEntity> ActiveBattleEntities;
-    public GameCollection<CoverPosition> ActiveCoverEntities;
+    public GameCollection<CoverLocation> ActiveCoverEntities;
 
     private BattleField _battleField;
     public BattleField BattleField { get { return _battleField; } }
@@ -29,6 +29,6 @@ public class BattleModel
     public BattleModel()
     {
         ActiveBattleEntities = new GameCollection<BattleEntity>();
-        ActiveCoverEntities = new GameCollection<CoverPosition>();
+        ActiveCoverEntities = new GameCollection<CoverLocation>();
     }
 }

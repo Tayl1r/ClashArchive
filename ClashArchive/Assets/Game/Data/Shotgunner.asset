@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a20b58d631a451745807fc090ae5b2da, type: 3}
+  m_Name: Shotgunner
+  m_EditorClassIdentifier: 
+  _characterName: Peko
+  _prefab: {fileID: 8779650248224243643, guid: 5d058e248563e8c4494b86bd9857f113, type: 3}
+  _characterRow: 0
+  _characterStats:
+    Health: 59360
+    Attack: 157
+    Defence: 130
+    MoveSpeed: 5.5
+    CriticalRate: 0
+    ReloadTime: 1.05
+    MaxAmmo: 10
+    UseCover: 0
+    CoverBlockChance: 0.5
+    MaximumAttackRange: 7
+    IdealAttackRange: 5
+    AttackInterval: 0.5
+  _autoAttackAbility: {fileID: 11400000, guid: f5edd61d05da8854a92388d37fd28fc6, type: 2}

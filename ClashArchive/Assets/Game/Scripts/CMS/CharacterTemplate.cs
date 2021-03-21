@@ -22,6 +22,7 @@ public class BaseStats
 
     [Header("Derived From Weapon Type?!")]
     public int MaxAmmo = 10;
+    public bool UseCover = true;
     public float CoverBlockChance = 0.5f;
     [Tooltip("Cannot attack if the opponent is further than this")] public float MaximumAttackRange = 10f;
     [Tooltip("When attacking without cover, try to stand at least this close")] public float IdealAttackRange = 8f;

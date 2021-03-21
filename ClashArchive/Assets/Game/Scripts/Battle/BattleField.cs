@@ -64,12 +64,10 @@ public class BattleField : MonoBehaviour
 
     public List<SpawnPoint> GetTheatreSpawnPoints(int index)
     {
-        Debug.Log(index);
-        if (_theatres == null || _theatres.Count < index)
+        if (_theatres == null || _theatres.Count <= index)
             return null;
         return _theatres[index].SpawnPoints;
     }
-
 
     public bool IsLeftOfBounds(Vector3 point)
     {

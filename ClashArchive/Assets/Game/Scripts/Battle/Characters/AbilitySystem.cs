@@ -7,15 +7,15 @@ public class AbilitySystem
 {
     private Animator _animator;
     private AbilityTemplate _currentTemplate;
-    private BattleEntity _battleEntity;
+    private BattleEntity _owner;
     
     private float _time;
     private bool _hasExecuted;
 
-    public AbilitySystem(BattleEntity battleEntity)
+    public AbilitySystem(BattleEntity owner)
     {
-        _battleEntity = battleEntity;
-        _animator = _battleEntity.Animator;
+        _owner = owner;
+        _animator = _owner.Animator;
     }
 
     public bool TriggerNewAbility(AbilityTemplate abilityTemplate)
@@ -50,10 +50,10 @@ public class AbilitySystem
 
         foreach(var template in abilityActionTemplate.DamageTemplates)
         {
-            if (_battleEntity.CurrentCombatTarget != null)
+            if (_owner.CurrentCombatTarget != null)
             {
-                int damage = (int)(_battleEntity.CharacterTemplate.CharacterStats.Attack * template.DamageModifier);
-                _battleEntity.CurrentCombatTarget.TakeDamage(damage);
+                int damage = (int)(_owner.CharacterTemplate.CharacterStats.Attack * template.DamageModifier);
+                _owner.CurrentCombatTarget.TakeDamage(damage);
             }
         }
     }
