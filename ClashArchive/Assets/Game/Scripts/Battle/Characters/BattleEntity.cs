@@ -9,15 +9,23 @@ public enum BattleEntityTeam { None, Player, Enemy }
 
 public class BattleEntity : MonoBehaviour
 {
+    private enum BattleEntityState
+    {
+        Waiting, Prep, Moving, Attacking
+    }
+
+
     [Header("Setup")]
     [SerializeField] private NavMeshAgent _navMeshAgent = default;
     public NavMeshAgent NavMeshAgent { get { return _navMeshAgent; } }
     [SerializeField] private Animator _animator = default;
     public Animator Animator { get { return _animator; } }
 
+    // Internal
     private AbilitySystem _abilitySystem;
     private CoverSystem _coverSystem;
     public Action<BattleEntity> OnDefeat;
+    private BattleEntityState _currentState;
 
     public BattleEntityTeam Team { private set; get; } = BattleEntityTeam.None;
     public CharacterTemplate CharacterTemplate { private set; get; }
@@ -42,7 +50,7 @@ public class BattleEntity : MonoBehaviour
         _health = characterTemplate.CharacterStats.Health;
         if (Team == BattleEntityTeam.Enemy)
             _health = _health / 4;
-        isActive = activeImmediately;
+        _currentState = activeImmediately ? BattleEntityState.Moving : BattleEntityState.Waiting;
 
         BattleModel.Instance.ActiveBattleEntities.AddMember(this);
     }
@@ -55,31 +63,52 @@ public class BattleEntity : MonoBehaviour
     }
     private void Update()
     {
-        if (!isActive)
+        if (_currentState == BattleEntityState.Waiting)
             return;
 
-        if (_abilitySystem.IsRunning())
-        {
-            _abilitySystem.Tick();
+        if (_currentState == BattleEntityState.Prep)
             return;
-        }
-
-        if (CurrentCombatTarget != null && Vector3.Distance(transform.position, CurrentMoveTarget) < 0.25f)
-        {
-            _navMeshAgent.isStopped = true;
-            _abilitySystem.TriggerNewAbility(CharacterTemplate.AutoAttackAbility);
-            return;
-        }
 
         if (CurrentCombatTarget == null)
-            GetTarget();
-
-        if (CurrentCombatTarget != null)
         {
-            Vector3 newPosition = GetPosition();
-            if (newPosition != CurrentMoveTarget)
+            GetTarget();
+            if (CurrentCombatTarget == null)
             {
-                CurrentMoveTarget = newPosition;
+                _currentState = BattleEntityState.Waiting;
+                return;
+            }
+        }
+
+        if (_currentState == BattleEntityState.Attacking)
+        {
+            _abilitySystem.Tick();
+            if (!_abilitySystem.IsRunning())
+            {
+                if (Vector3.Distance(transform.position, CurrentCombatTarget.transform.position) <= CharacterStats.MaximumAttackRange)
+                    _abilitySystem.TriggerNewAbility(CharacterTemplate.AutoAttackAbility);
+                else
+                    _currentState = BattleEntityState.Moving;
+            }
+            else
+            {
+                return;
+            }
+        }
+
+        if (_currentState == BattleEntityState.Moving)
+        {
+            if (Vector3.Distance(transform.position, CurrentMoveTarget) < 0.25f)
+            {
+                _navMeshAgent.isStopped = true;
+                _abilitySystem.TriggerNewAbility(CharacterTemplate.AutoAttackAbility);
+                _currentState = BattleEntityState.Attacking;
+                return;
+            }
+            else
+            {
+                _coverSystem.Tick();
+                Vector3 position = _coverSystem.IdealCover != null ? _coverSystem.IdealCover.GetPosition() : GetIntoAttackRange();
+                CurrentMoveTarget = position;
                 _navMeshAgent.isStopped = false;
                 _navMeshAgent.SetDestination(CurrentMoveTarget);
             }
@@ -142,41 +171,8 @@ public class BattleEntity : MonoBehaviour
         return enemyPosition + (direction * CharacterStats.IdealAttackRange);
     }
 
-    private void CheckAlert()
-    {
-        foreach (var battleEntity in BattleModel.Instance.ActiveBattleEntities.Data)
-        {
-            if (battleEntity.Team == Team)
-                continue;
-
-            if (Vector3.Distance(transform.position, battleEntity.transform.position) < 10f)
-            {
-                SoundAlert();
-                return;
-            }
-        }
-    }
-
-    private void SoundAlert()
-    {
-        foreach (var battleEntity in BattleModel.Instance.ActiveBattleEntities.Data)
-        {
-            if (battleEntity.Team == Team && battleEntity != this)
-                battleEntity.OnDetectEnemy();
-        }
-    }
-
-    public void OnDetectEnemy()
-    {
-        isActive = true;
-    }
-
-
     public void TakeDamage(int damage)
     {
-        /*if (!isActive)
-            SoundAlert();*/
-
         _health -= damage;
         if (_health <= 0)
             Destroy(gameObject);
@@ -186,7 +182,7 @@ public class BattleEntity : MonoBehaviour
 #if UNITY_EDITOR
     private void OnDrawGizmos()
     {
-        if (_abilitySystem.IsRunning())
+        if (_abilitySystem.IsRunning() && CurrentCombatTarget != null)
         {
             Gizmos.color = Color.red;
             Gizmos.DrawLine(transform.position + Vector3.up, CurrentCombatTarget.transform.position);
@@ -209,6 +205,8 @@ public class BattleEntity : MonoBehaviour
             debug += "\nTarget: null";
         debug += "\nMovePos: " + CurrentMoveTarget;
         debug += "\nNav Stopped: " + _navMeshAgent.isStopped.ToString();
+        debug += "\nState: " + _currentState;
+        debug += "\nHealth: " + _health;
 
         Handles.Label(transform.position, debug);
     }

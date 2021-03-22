@@ -964,7 +964,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _battleField: {fileID: 2001246032}
   playerCharacters:
-  - CharacterTemplate: {fileID: 11400000, guid: 09e91224b9068b24b97fe30398d2651c, type: 2}
+  - CharacterTemplate: {fileID: 11400000, guid: 94841a291761b334eb5f2774d2277b2a, type: 2}
     LevelOffset: 0
   _missionTemplate: {fileID: 11400000, guid: 29dc83fa84ac6f94f8b3217754385d94, type: 2}
 --- !u!4 &1107137879

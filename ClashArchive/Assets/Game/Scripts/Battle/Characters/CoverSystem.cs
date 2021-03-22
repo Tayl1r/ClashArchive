@@ -23,6 +23,9 @@ public class CoverSystem
 
     public void Tick()
     {
+        if (!_owner.CharacterTemplate.CharacterStats.UseCover)
+            return;
+
         // If we're snug and can shoot the opponent, return
         if (IsInCover() && _owner.IsTargetInRange())
             return;
@@ -66,9 +69,11 @@ public class CoverSystem
     private void InvalidateCurrentCover()
     {
         if (IdealCover != null && _occupiedCover.Contains(IdealCover))
+        {
             _occupiedCover.Remove(IdealCover);
-        IdealCover = null;
-        OnCoverInvalid?.Invoke();
+            OnCoverInvalid?.Invoke();
+        }
+         IdealCover = null;
     }
 
     private CoverLocation SearchForCover()
