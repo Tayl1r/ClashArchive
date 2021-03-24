@@ -2,50 +2,27 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
+public class BattleFieldBounds
+{
+    public Vector2 offset;
+    public Vector2 size;
+}
 
-    [System.Serializable]
-    public class PlayerSpawnRows
-    {
-        public Transform transform;
-        public PlayerSpawnRow frontRow;
-        public PlayerSpawnRow middleRow;
-        public PlayerSpawnRow backRow;
-    }
-
-    [System.Serializable]
-    public class PlayerSpawnRow
-    {
-        public Vector3 start;
-        public Vector3 end;
-
-        public Vector3 GetPoint(int index, int count)
-        {
-            float t = (float)index / count;
-            return Vector3.Lerp(start, end, t);
-        }
-    }
-
-    [System.Serializable]
-    public class BattleFieldBounds
-    {
-        public Vector2 offset;
-        public Vector2 size;
-    }
-
-    [System.Serializable]
-    public class BattleFieldTheatre
-    {
-        public Transform centrePoint;
-        public List<SpawnPoint> SpawnPoints;
-    }
+[System.Serializable]
+public class BattleFieldTheatre
+{
+    public Transform centrePoint;
+    public List<SpawnPoint> SpawnPoints;
+}
 
 public class BattleField : MonoBehaviour
 {
     public static BattleField Instance;
 
     [Header("Stage Setup")]
-    [SerializeField] private PlayerSpawnRows _playerSpawnPoints = default;
-    public PlayerSpawnRows PlayerSpawnPoints { get { return _playerSpawnPoints; } }
+    [SerializeField] private List<SpawnPoint> _playerSpawnPoints = default;
+    public List<SpawnPoint> PlayerSpawnPoints { get { return _playerSpawnPoints; } }
     [Space]
     [SerializeField] private List<BattleFieldTheatre> _theatres = default;
     [Space]
@@ -117,8 +94,6 @@ public class BattleField : MonoBehaviour
 
     private void DrawGizmos()
     {
-        DrawSpawnRowsGizmos(PlayerSpawnPoints);
-
         if (_theatres != null)
         {
             Gizmos.color = Color.yellow;
@@ -138,20 +113,6 @@ public class BattleField : MonoBehaviour
 
         Gizmos.color = Color.white;
         DrawBounds(_mainBounds);
-    }
-
-    private void DrawSpawnRowsGizmos(PlayerSpawnRows spawnRows)
-    {
-        if (spawnRows == null || spawnRows.transform == null)
-            return;
-        
-        Vector3 position = spawnRows.transform.position;
-        Gizmos.color = Color.green;
-        Gizmos.DrawLine(position + spawnRows.backRow.start, position + spawnRows.backRow.end);
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawLine(position + spawnRows.middleRow.start, position + spawnRows.middleRow.end);
-        Gizmos.color = Color.red;
-        Gizmos.DrawLine(position + spawnRows.frontRow.start, position + spawnRows.frontRow.end);
     }
 
     private void DrawBounds(BattleFieldBounds bounds)
