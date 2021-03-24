@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _characterName: Peko
   _prefab: {fileID: 8779650248224243643, guid: efa3c171df916f848a8c4606fee356bb, type: 3}
-  _characterRow: 0
+  _characterRow: 1
   _characterStats:
     Health: 29680
     Attack: 157
@@ -23,6 +23,7 @@ MonoBehaviour:
     CriticalRate: 0
     ReloadTime: 1.05
     MaxAmmo: 10
+    UseCover: 1
     CoverBlockChance: 0.5
     MaximumAttackRange: 12
     IdealAttackRange: 10

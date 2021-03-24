@@ -191,7 +191,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 49523336}
-  m_LocalRotation: {x: 0.3193467, y: 0.12881726, z: -0.04386505, w: 0.93781644}
+  m_LocalRotation: {x: 0.31934664, y: 0.12881725, z: -0.04386504, w: 0.9378165}
   m_LocalPosition: {x: -16.060009, y: 20, z: -25}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -892,7 +892,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 963194225}
-  m_LocalRotation: {x: 0.3193467, y: 0.12881726, z: -0.04386505, w: 0.93781644}
+  m_LocalRotation: {x: 0.31934664, y: 0.12881725, z: -0.04386504, w: 0.9378165}
   m_LocalPosition: {x: -16.060009, y: 20, z: -25}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
@@ -964,7 +964,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _battleField: {fileID: 2001246032}
   playerCharacters:
+  - CharacterTemplate: {fileID: 11400000, guid: 9d5d246d3a74c63439ab8060a6bc30e8, type: 2}
+    LevelOffset: 0
+  - CharacterTemplate: {fileID: 11400000, guid: 09e91224b9068b24b97fe30398d2651c, type: 2}
+    LevelOffset: 0
   - CharacterTemplate: {fileID: 11400000, guid: 94841a291761b334eb5f2774d2277b2a, type: 2}
+    LevelOffset: 0
+  - CharacterTemplate: {fileID: 11400000, guid: 09e91224b9068b24b97fe30398d2651c, type: 2}
+    LevelOffset: 0
+  - CharacterTemplate: {fileID: 11400000, guid: 9d5d246d3a74c63439ab8060a6bc30e8, type: 2}
     LevelOffset: 0
   _missionTemplate: {fileID: 11400000, guid: 29dc83fa84ac6f94f8b3217754385d94, type: 2}
 --- !u!4 &1107137879
