@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
 [System.Serializable]
 public class BattleFieldBounds
@@ -39,11 +40,16 @@ public class BattleField : MonoBehaviour
         Instance = this;
     }
 
-    public List<SpawnPoint> GetTheatreSpawnPoints(int index)
+    private BattleFieldTheatre GetTheatre(int index)
     {
         if (_theatres == null || _theatres.Count <= index)
             return null;
-        return _theatres[index].SpawnPoints;
+        return _theatres[index];
+    }
+
+    public List<SpawnPoint> GetTheatreSpawnPoints(int index)
+    {
+        return GetTheatre(index).SpawnPoints;
     }
 
     public bool IsLeftOfBounds(Vector3 point)
@@ -71,6 +77,32 @@ public class BattleField : MonoBehaviour
             return false;*/
 
         return true;
+    }
+
+    public Vector3 GetRowPosition(int stage, Vector3 currentPosition, CharacterRow characterRow)
+    {
+        var theatre = GetTheatre(stage);       
+        float x = theatre.centrePoint.transform.position.x;
+        Vector3 result = currentPosition;
+
+        switch(characterRow)
+        {
+            case CharacterRow.Middle:
+                x -= 3;
+                break;
+            case CharacterRow.Back:
+                x -= 6;
+                break;
+            default:
+                x -= 0;
+                break;
+        }
+        result.x = x;
+
+        if (NavMesh.SamplePosition(result, out NavMeshHit hit, 5f, NavMesh.AllAreas))
+            return hit.position;
+
+        return result;
     }
 
     public Vector3 GetTravelDirectionForTeam(BattleEntityTeam team)

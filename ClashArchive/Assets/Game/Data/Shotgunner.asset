@@ -16,16 +16,16 @@ MonoBehaviour:
   _prefab: {fileID: 8779650248224243643, guid: 5d058e248563e8c4494b86bd9857f113, type: 3}
   _characterRow: 0
   _characterStats:
-    Health: 59360
-    Attack: 157
+    Health: 6000
+    Attack: 125
     Defence: 130
-    MoveSpeed: 5.5
+    MoveSpeed: 7
     CriticalRate: 0
     ReloadTime: 1.05
     MaxAmmo: 10
     UseCover: 0
     CoverBlockChance: 0.5
-    MaximumAttackRange: 7
-    IdealAttackRange: 4
+    MaximumAttackRange: 5
+    IdealAttackRange: 3
     AttackInterval: 0.5
   _autoAttackAbility: {fileID: 11400000, guid: f5edd61d05da8854a92388d37fd28fc6, type: 2}

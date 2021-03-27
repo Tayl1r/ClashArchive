@@ -33,7 +33,6 @@ public class BattleEntity : MonoBehaviour
     public BattleEntity CurrentCombatTarget { private set; get; }
     public Vector3 CurrentMoveTarget { private set; get; }
 
-    private bool isActive  = false;
     private int _health;
 
     private void Start()
@@ -61,20 +60,37 @@ public class BattleEntity : MonoBehaviour
         _coverSystem.OnDestroy();
         BattleModel.Instance.ActiveBattleEntities.RemoveMember(this);
     }
+
+    public void EnterPrep(Vector3 position)
+    {
+        _navMeshAgent.isStopped = false;
+        CurrentMoveTarget = position;
+        _navMeshAgent.SetDestination(CurrentMoveTarget);
+        _currentState = BattleEntityState.Prep;
+    }
+
     private void Update()
     {
         if (_currentState == BattleEntityState.Waiting)
             return;
 
         if (_currentState == BattleEntityState.Prep)
-            return;
+        {
+            if (Vector3.Distance(transform.position, CurrentMoveTarget) < 0.25f)
+            {
+                _navMeshAgent.isStopped = true;
+                BattleDirector.Instance.OnPreperationComplete();
+                _currentState = BattleEntityState.Waiting;
+                return;
+            }
+        }
 
         if (CurrentCombatTarget == null)
         {
             GetTarget();
             if (CurrentCombatTarget == null)
             {
-                _currentState = BattleEntityState.Waiting;
+                //_currentState = BattleEntityState.Waiting;
                 return;
             }
         }
@@ -114,7 +130,11 @@ public class BattleEntity : MonoBehaviour
             }
         }
     }
-    
+
+    public void StartCombat()
+    {
+        _currentState = BattleEntityState.Moving;
+    }
 
     private void GetTarget()
     {
@@ -123,7 +143,7 @@ public class BattleEntity : MonoBehaviour
 
         foreach (var battleEntity in BattleModel.Instance.ActiveBattleEntities.Data)
         {
-            if (battleEntity.Team != Team)
+            if (battleEntity != null && battleEntity.Team != Team)
             {
                 float distance = Vector3.Distance(transform.position, battleEntity.transform.position);
                 if (distance < closestRecord)
@@ -147,20 +167,6 @@ public class BattleEntity : MonoBehaviour
         return true;
     }
 
-    private Vector3 GetPosition()
-    {
-        if (CurrentCombatTarget == null)
-            throw new Exception("Shouldn't be getting a position with no target set");
-
-        if (CharacterTemplate.CharacterStats.UseCover)
-            _coverSystem.Tick();
-
-        if (_coverSystem.IdealCover != null)
-            return _coverSystem.IdealCover.GetPosition();
-        else
-            return GetIntoAttackRange();
-    }
-
     private Vector3 GetIntoAttackRange()
     {
         Vector3 enemyPosition = CurrentCombatTarget.transform.position;
@@ -177,7 +183,6 @@ public class BattleEntity : MonoBehaviour
         if (_health <= 0)
             Destroy(gameObject);
     }
-
 
 #if UNITY_EDITOR
     private void OnDrawGizmos()

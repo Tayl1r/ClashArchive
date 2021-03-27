@@ -25,3 +25,27 @@ MonoBehaviour:
       LevelOffset: 0
     - CharacterTemplate: {fileID: 11400000, guid: 94841a291761b334eb5f2774d2277b2a, type: 2}
       LevelOffset: 0
+  - CharacterBaseLevel: 0
+    MissionSpawns:
+    - CharacterTemplate: {fileID: 11400000, guid: 9d5d246d3a74c63439ab8060a6bc30e8, type: 2}
+      LevelOffset: 0
+    - CharacterTemplate: {fileID: 11400000, guid: 9d5d246d3a74c63439ab8060a6bc30e8, type: 2}
+      LevelOffset: 0
+    - CharacterTemplate: {fileID: 11400000, guid: 09e91224b9068b24b97fe30398d2651c, type: 2}
+      LevelOffset: 0
+    - CharacterTemplate: {fileID: 11400000, guid: 94841a291761b334eb5f2774d2277b2a, type: 2}
+      LevelOffset: 0
+    - CharacterTemplate: {fileID: 11400000, guid: 94841a291761b334eb5f2774d2277b2a, type: 2}
+      LevelOffset: 0
+  - CharacterBaseLevel: 0
+    MissionSpawns:
+    - CharacterTemplate: {fileID: 11400000, guid: 9d5d246d3a74c63439ab8060a6bc30e8, type: 2}
+      LevelOffset: 0
+    - CharacterTemplate: {fileID: 11400000, guid: 9d5d246d3a74c63439ab8060a6bc30e8, type: 2}
+      LevelOffset: 0
+    - CharacterTemplate: {fileID: 11400000, guid: 09e91224b9068b24b97fe30398d2651c, type: 2}
+      LevelOffset: 0
+    - CharacterTemplate: {fileID: 11400000, guid: 94841a291761b334eb5f2774d2277b2a, type: 2}
+      LevelOffset: 0
+    - CharacterTemplate: {fileID: 11400000, guid: 94841a291761b334eb5f2774d2277b2a, type: 2}
+      LevelOffset: 0

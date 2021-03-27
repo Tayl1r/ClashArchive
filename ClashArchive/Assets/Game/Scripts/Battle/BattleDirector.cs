@@ -14,6 +14,7 @@ public class BattleDirector : MonoBehaviour
     private int _currentStage = 0;
     private int _remainingStageEnemies = 0;
     private int _remainingTotalEnemies = 0;
+    private int _preparingCharacters = 0;
 
     void Start()
     {
@@ -28,17 +29,6 @@ public class BattleDirector : MonoBehaviour
         SetupStage(_currentStage);
         _remainingTotalEnemies = GetTotalEnemies(_missionTemplate);
     }
-
-#if UNITY_EDITOR
-    public void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            _currentStage++;
-            SetupStage(_currentStage);
-        }
-    }
-#endif
 
     private void SetupStage(int stage)
     {
@@ -56,6 +46,22 @@ public class BattleDirector : MonoBehaviour
         Debug.Log($"Stage {stage} preperation: Places, everyone! Places!");
         foreach (var entity in BattleModel.Instance.ActiveBattleEntities.Data)
         {
+            if (entity.Team == BattleEntityTeam.Player)
+            {
+                Vector3 position = _battleField.GetRowPosition(_currentStage, entity.transform.position, entity.CharacterTemplate.CharacterRow);
+                _preparingCharacters++;
+                entity.EnterPrep(position);
+            }
+        }
+    }
+
+    public void OnPreperationComplete()
+    {
+        _preparingCharacters--;
+        if (_preparingCharacters <= 0)
+        {
+            foreach (var entity in BattleModel.Instance.ActiveBattleEntities.Data)
+                entity.StartCombat();
         }
     }
 
@@ -125,7 +131,6 @@ public class BattleDirector : MonoBehaviour
         entity.OnDefeat -= EnemyDefeated;
         _remainingStageEnemies--;
         _remainingTotalEnemies--;
-        Debug.Log(_remainingTotalEnemies);
 
         if (_remainingStageEnemies <= 0)
         {
