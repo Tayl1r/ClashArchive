@@ -21,7 +21,7 @@ public class BattleDirector : MonoBehaviour
             _battleField = BattleField.Instance;
         Instance = this;
 
-        List<BattleEntity> characters = SpawnCharacters(playerCharacters, _battleField.PlayerSpawnPoints, BattleEntityTeam.Player);
+        var characters = SpawnCharacters(playerCharacters, _battleField.PlayerSpawnPoints, BattleEntityTeam.Player, false);
         foreach(var character in characters)
             _battleField.targetGroup.AddMember(character.transform, 1f, 1f);
 
@@ -46,7 +46,12 @@ public class BattleDirector : MonoBehaviour
             throw new System.Exception($"Battle Field does not support stage number {stage}.");
 
         var spawnPoints = _battleField.GetTheatreSpawnPoints(_currentStage);
-        SpawnCharacters(_missionTemplate.stages[stage].MissionSpawns, spawnPoints, BattleEntityTeam.Enemy);
+        var enemyCharacters = SpawnCharacters(_missionTemplate.stages[stage].MissionSpawns, spawnPoints, BattleEntityTeam.Enemy, true);
+        foreach(var character in enemyCharacters)
+        {
+            character.OnDefeat += EnemyDefeated;
+            _remainingStageEnemies++;
+        }
 
         Debug.Log($"Stage {stage} preperation: Places, everyone! Places!");
         foreach (var entity in BattleModel.Instance.ActiveBattleEntities.Data)
@@ -54,7 +59,7 @@ public class BattleDirector : MonoBehaviour
         }
     }
 
-    public List<BattleEntity> SpawnCharacters(List<CharacterSpawnTemplate> characterSpawnTemplates, List<SpawnPoint> spawnPoints, BattleEntityTeam team)
+    public List<BattleEntity> SpawnCharacters(List<CharacterSpawnTemplate> characterSpawnTemplates, List<SpawnPoint> spawnPoints, BattleEntityTeam team, bool randomisePoints)
     {
         if (spawnPoints == null)
             throw new System.Exception($"No spawn points provided");
@@ -77,14 +82,21 @@ public class BattleDirector : MonoBehaviour
             CharacterTemplate characterTemplate = enemy.CharacterTemplate;
             if (rowSpawns.ContainsKey(characterTemplate.CharacterRow) && rowSpawns[characterTemplate.CharacterRow].Count > 0)
             {
-                spawnPoint = RandomUtils.RandomFrom(rowSpawns[characterTemplate.CharacterRow]);
+                if (randomisePoints)
+                    spawnPoint = RandomUtils.RandomFrom(rowSpawns[characterTemplate.CharacterRow]);
+                else
+                    spawnPoint = rowSpawns[characterTemplate.CharacterRow][0];
                 rowSpawns[characterTemplate.CharacterRow].Remove(spawnPoint);
                 allSpawnPoints.Remove(spawnPoint);
             }
             else if (allSpawnPoints.Count > 0)
             {
-                spawnPoint = RandomUtils.RandomFrom(allSpawnPoints);
-                Debug.LogWarning($"There are not enought \"{characterTemplate.CharacterRow}\" spawn points for this wave");
+                if (randomisePoints)
+                    spawnPoint = RandomUtils.RandomFrom(allSpawnPoints);
+                else
+                    spawnPoint = allSpawnPoints[0];
+                allSpawnPoints.Remove(spawnPoint);
+                Debug.LogWarning($"There are not enough \"{characterTemplate.CharacterRow}\" spawn points");
             }
             else
             {
@@ -94,8 +106,7 @@ public class BattleDirector : MonoBehaviour
             BattleEntity newEntity = Instantiate(characterTemplate.Prefab, spawnPoint.transform.position, spawnPoint.transform.rotation, transform);
             results.Add(newEntity);
             newEntity.Populate(characterTemplate, team, team == BattleEntityTeam.Player);
-            newEntity.OnDefeat += EnemyDefeated;
-            _remainingStageEnemies++;
+
         }
 
         return results;
