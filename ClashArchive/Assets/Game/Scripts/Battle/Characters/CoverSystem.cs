@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.AI;
 
 public class CoverSystem
-{
+{/*
     private BattleEntity _owner;
     public CoverLocation IdealCover { private set; get; }
 
@@ -129,5 +129,5 @@ public class CoverSystem
         Debug.DrawLine(selfPos, coverPos, Color.magenta);
 
         return true;
-    }
+    }*/
 }

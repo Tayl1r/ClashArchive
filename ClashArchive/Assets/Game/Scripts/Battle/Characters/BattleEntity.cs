@@ -11,7 +11,7 @@ public class BattleEntity : MonoBehaviour
 {
     private enum BattleEntityState
     {
-        Waiting, Prep, Moving, Attacking
+        Waiting, Preparing, Moving, Attacking
     }
 
 
@@ -20,51 +20,60 @@ public class BattleEntity : MonoBehaviour
     public NavMeshAgent NavMeshAgent { get { return _navMeshAgent; } }
     [SerializeField] private Animator _animator = default;
     public Animator Animator { get { return _animator; } }
+    LocomotionSystem _locomotionSystem;
 
+    /*
     // Internal
     private AbilitySystem _abilitySystem;
     private CoverSystem _coverSystem;
-    public Action<BattleEntity> OnDefeat;
+    public Action<BattleEntity> OnDefeat;*/
     private BattleEntityState _currentState;
-
+    
     public BattleEntityTeam Team { private set; get; } = BattleEntityTeam.None;
     public CharacterTemplate CharacterTemplate { private set; get; }
     public BaseStats CharacterStats { private set; get; }
-    public BattleEntity CurrentCombatTarget { private set; get; }
-    public Vector3 CurrentMoveTarget { private set; get; }
-
+    //public BattleEntity CurrentCombatTarget { private set; get; }
+    public Vector3 CurrentMoveTarget;
+    /*
     private int _health;
-
-    private void Start()
-    {
-        _abilitySystem = new AbilitySystem(this);
-        _coverSystem = new CoverSystem(this);
-    }
-
+    */
+  
     public void Populate(CharacterTemplate characterTemplate, BattleEntityTeam team)
     {
+        _locomotionSystem = new LocomotionSystem(_navMeshAgent, _animator);
+
         Team = team;
         CharacterTemplate = characterTemplate;
         CharacterStats = characterTemplate.CharacterStats;
-        _health = characterTemplate.CharacterStats.Health;
+    /*    _health = characterTemplate.CharacterStats.Health;
         if (Team == BattleEntityTeam.Enemy)
-            _health = _health / 4;
+            _health = _health / 4;*/
         BattleModel.Instance.ActiveBattleEntities.AddMember(this);
     }
-
+    
     public void GetIntoPosition(Vector3 position)
     {
-        _navMeshAgent.isStopped = false;
-        _navMeshAgent.SetDestination(position);
+        _locomotionSystem.MoveToPosition(position, CharacterStats.MoveSpeed, () => BattleDirector.Instance.OnPreperationComplete());
+        _currentState = BattleEntityState.Preparing;
+    }
+
+    public void StartCombat()
+    {
+        _currentState = BattleEntityState.Moving;
+    }
+
+    private void Update()
+    {
+        _locomotionSystem.Tick();
     }
 
     private void OnDestroy()
     {
-        OnDefeat?.Invoke(this);
-        _coverSystem.OnDestroy();
+       /* OnDefeat?.Invoke(this);
+        _coverSystem.OnDestroy();*/
         BattleModel.Instance.ActiveBattleEntities.RemoveMember(this);
     }
-
+    /*
     public void EnterPrep(Vector3 position)
     {
         _navMeshAgent.isStopped = false;
@@ -178,11 +187,11 @@ public class BattleEntity : MonoBehaviour
         if (_health <= 0)
             Destroy(gameObject);
     }
-
+    */
 #if UNITY_EDITOR
     private void OnDrawGizmos()
     {
-        if (_abilitySystem.IsRunning() && CurrentCombatTarget != null)
+        /*if (_abilitySystem.IsRunning() && CurrentCombatTarget != null)
         {
             Gizmos.color = Color.red;
             Gizmos.DrawLine(transform.position + Vector3.up, CurrentCombatTarget.transform.position);
@@ -194,19 +203,20 @@ public class BattleEntity : MonoBehaviour
             Gizmos.DrawLine(transform.position + Vector3.up, _coverSystem.IdealCover.transform.position);
         }
         else
-        {
+        {*/
             Gizmos.color = Color.green;
             Gizmos.DrawLine(transform.position + Vector3.up, CurrentMoveTarget);
-        }
-        string debug = "In Cover: " + _coverSystem.IsInCover().ToString();
+        //}
+        string debug = "";
+        /*debug += "In Cover: " + _coverSystem.IsInCover().ToString();
         if (CurrentCombatTarget != null)
             debug += "\nTarget: " + CurrentCombatTarget.name;
         else
             debug += "\nTarget: null";
         debug += "\nMovePos: " + CurrentMoveTarget;
-        debug += "\nNav Stopped: " + _navMeshAgent.isStopped.ToString();
+        debug += "\nNav Stopped: " + _navMeshAgent.isStopped.ToString();*/
         debug += "\nState: " + _currentState;
-        debug += "\nHealth: " + _health;
+        //debug += "\nHealth: " + _health;
 
         Handles.Label(transform.position, debug);
     }

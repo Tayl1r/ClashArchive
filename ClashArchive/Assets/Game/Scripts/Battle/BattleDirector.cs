@@ -17,6 +17,7 @@ public class BattleDirector : MonoBehaviour
     [Header("Debug")]
     [SerializeField] private List<CharacterSpawnTemplate> playerCharacters = default;
     [SerializeField] private MissionTemplate _missionTemplate = default;
+    private int _preparingCharacters;
 
     private void Start()
     {
@@ -63,7 +64,9 @@ public class BattleDirector : MonoBehaviour
                 Vector3 position = destination + -spawnPoint.transform.forward * _spawnBackupDistance;
 
                 character.transform.position = position;
+                character.transform.rotation = spawnPoint.transform.rotation;
                 character.GetIntoPosition(destination);
+                _preparingCharacters++;
             }
             else
             {
@@ -71,6 +74,16 @@ public class BattleDirector : MonoBehaviour
                 break;
             }
             index++;
+        }
+    }
+
+    public void OnPreperationComplete()
+    {
+        _preparingCharacters--;
+        if (_preparingCharacters <= 0)
+        {
+            foreach (var entity in BattleModel.Instance.ActiveBattleEntities.Data)
+                entity.StartCombat();
         }
     }
 

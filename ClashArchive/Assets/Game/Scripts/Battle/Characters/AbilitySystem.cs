@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class AbilitySystem
-{
+{/*
     private Animator _animator;
     private AbilityTemplate _currentTemplate;
     private BattleEntity _owner;
@@ -82,5 +82,5 @@ public class AbilitySystem
     public bool IsRunning()
     {
         return _currentTemplate != null;
-    }
+    }*/
 }
