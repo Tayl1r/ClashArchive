@@ -24,9 +24,9 @@ public class BattleEntity : MonoBehaviour
 
     /*
     // Internal
-    private AbilitySystem _abilitySystem;
+    private AbilitySystem _abilitySystem;*/
     private CoverSystem _coverSystem;
-    public Action<BattleEntity> OnDefeat;*/
+    //public Action<BattleEntity> OnDefeat;*/
     private BattleEntityState _currentState;
     
     public BattleEntityTeam Team { private set; get; } = BattleEntityTeam.None;
@@ -41,6 +41,7 @@ public class BattleEntity : MonoBehaviour
     public void Populate(CharacterTemplate characterTemplate, BattleEntityTeam team)
     {
         _locomotionSystem = new LocomotionSystem(_navMeshAgent, _animator);
+        _coverSystem = new CoverSystem(this);
 
         Team = team;
         CharacterTemplate = characterTemplate;
@@ -53,7 +54,11 @@ public class BattleEntity : MonoBehaviour
     
     public void GetIntoPosition(Vector3 position)
     {
-        _locomotionSystem.MoveToPosition(position, CharacterStats.MoveSpeed, () => BattleDirector.Instance.OnPreperationComplete());
+        _coverSystem.GetRandomUsefulCoverNearPoint(position, true);
+        Vector3 destination = position;
+        if (_coverSystem.IdealCover)
+            destination = _coverSystem.IdealCover.GetPosition();
+        _locomotionSystem.MoveToPosition(destination, CharacterStats.MoveSpeed, () => BattleDirector.Instance.OnPreperationComplete());
         _currentState = BattleEntityState.Preparing;
     }
 
@@ -69,8 +74,8 @@ public class BattleEntity : MonoBehaviour
 
     private void OnDestroy()
     {
-       /* OnDefeat?.Invoke(this);
-        _coverSystem.OnDestroy();*/
+       // OnDefeat?.Invoke(this);
+        _coverSystem.OnDestroy();
         BattleModel.Instance.ActiveBattleEntities.RemoveMember(this);
     }
     /*

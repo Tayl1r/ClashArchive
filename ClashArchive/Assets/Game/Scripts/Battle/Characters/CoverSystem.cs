@@ -5,14 +5,12 @@ using UnityEngine;
 using UnityEngine.AI;
 
 public class CoverSystem
-{/*
+{
     private BattleEntity _owner;
     public CoverLocation IdealCover { private set; get; }
 
     private static List<CoverLocation> _occupiedCover;
     private static float CoverSearchRange = 5f;
-    public Action<CoverLocation> OnFindNewIdealCover;
-    public Action OnCoverInvalid;
 
     public CoverSystem(BattleEntity owner)
     {
@@ -21,6 +19,72 @@ public class CoverSystem
             _occupiedCover = new List<CoverLocation>();
     }
 
+    public void OnDestroy()
+    {
+        UnsetCover();
+    }
+
+    private void SetAsCover(CoverLocation coverLocation)
+    {
+        if (IdealCover != null)
+            UnsetCover();
+
+        IdealCover = coverLocation;
+        _occupiedCover.Add(IdealCover);
+    }
+
+    private void UnsetCover()
+    {
+        if (IdealCover == null)
+            return;
+        _occupiedCover.Remove(IdealCover);
+        IdealCover = null;
+    }
+
+    // This isn't the cheapest thing, but it's okay once at the start of a round
+    public CoverLocation GetRandomUsefulCoverNearPoint(Vector3 point, bool setAsTarget)
+    {
+        if (!_owner.CharacterStats.UseCover)
+            return null;
+
+        var potentialResults = new List<CoverLocation>();
+        foreach(var coverLocation in BattleModel.Instance.ActiveCoverEntities.Data)
+        {
+            foreach(var entity in BattleModel.Instance.ActiveBattleEntities.Data)
+            {
+                if (entity.Team != _owner.Team)
+                    continue;
+
+                if (IsValidCover(coverLocation, point, entity.transform.position, CoverSearchRange, _owner.CharacterStats.MaximumAttackRange))
+                { 
+                    potentialResults.Add(coverLocation);
+                    break;
+                }
+            }
+        }
+
+        CoverLocation result = null;
+
+        if (potentialResults.Count > 0)
+            result = RandomUtils.RandomFrom(potentialResults);
+        if (setAsTarget)
+            SetAsCover(IdealCover);
+        return result;
+    }
+
+    private List<CoverLocation> GetNearbyCover(Vector3 position, float searchRange)
+    {
+        var results = new List<CoverLocation>();
+        foreach (var coverLocation in BattleModel.Instance.ActiveCoverEntities.Data)
+        {
+            if (MathUtils.PointInCircle(coverLocation.GetPosition(), searchRange, position))
+                results.Add(coverLocation);
+        }
+        return results;
+    }
+
+
+    /*
     public void Tick()
     {
         if (!_owner.CharacterTemplate.CharacterStats.UseCover)
@@ -95,39 +159,38 @@ public class CoverSystem
         }
         return bestCover;
     }
-
-    private bool IsValidCover(CoverLocation coverLocation)
+    */
+    private static bool IsValidCover(CoverLocation coverLocation, Vector3 characterPosition, Vector3 enemyPosition, float searchRange, float attackRange)
     {
         if (coverLocation == null)
             return false;
 
-        Vector3 coverPos = coverLocation.GetPosition();
-        Vector3 selfPos = _owner.transform.position;
-        Vector3 enemyPos = _owner.CurrentCombatTarget.transform.position;
+        Vector3 coverPosition = coverLocation.GetPosition();
 
         // Is this occupied?
         if (_occupiedCover.Contains(coverLocation))
             return false;
 
         // Is this close enough for me to enter?
-        if (!MathUtils.PointInCircle(coverPos, CoverSearchRange, selfPos))
-            return false;
-
-        // Can I actually attack from here?
-        if (!MathUtils.PointInCircle(coverLocation.GetPosition(), _owner.CharacterStats.MaximumAttackRange, _owner.CurrentCombatTarget.transform.position))
+        if (!MathUtils.PointInCircle(coverPosition, searchRange, characterPosition))
             return false;
 
         // Does this face the enemy?
-        Vector3 direction = (enemyPos - coverPos).normalized;
+        Vector3 direction = (enemyPosition - coverPosition).normalized;
         if (Vector3.Dot(direction, coverLocation.transform.forward) < 0.75)
             return false;
 
-        // Is this on the Nav Mesh?
-        if (!NavMesh.SamplePosition(coverPos, out NavMeshHit hit, 0.1f, NavMesh.AllAreas))
+        // Can I actually attack from here?
+        if (!MathUtils.PointInCircle(coverLocation.GetPosition(), attackRange, enemyPosition))
             return false;
 
-        Debug.DrawLine(selfPos, coverPos, Color.magenta);
+        /*
+        // Is this on the Nav Mesh?
+        if (!NavMesh.SamplePosition(coverPos, out NavMeshHit hit, 0.1f, NavMesh.AllAreas))
+            return false;*/
+
+        Debug.DrawLine(characterPosition, coverPosition, Color.magenta, 0.1f);
 
         return true;
-    }*/
+    }
 }
