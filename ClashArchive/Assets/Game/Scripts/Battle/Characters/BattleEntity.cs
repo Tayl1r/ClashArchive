@@ -41,7 +41,7 @@ public class BattleEntity : MonoBehaviour
         _coverSystem = new CoverSystem(this);
     }
 
-    public void Populate(CharacterTemplate characterTemplate, BattleEntityTeam team, bool activeImmediately)
+    public void Populate(CharacterTemplate characterTemplate, BattleEntityTeam team)
     {
         Team = team;
         CharacterTemplate = characterTemplate;
@@ -49,9 +49,13 @@ public class BattleEntity : MonoBehaviour
         _health = characterTemplate.CharacterStats.Health;
         if (Team == BattleEntityTeam.Enemy)
             _health = _health / 4;
-        _currentState = activeImmediately ? BattleEntityState.Moving : BattleEntityState.Waiting;
-
         BattleModel.Instance.ActiveBattleEntities.AddMember(this);
+    }
+
+    public void GetIntoPosition(Vector3 position)
+    {
+        _navMeshAgent.isStopped = false;
+        _navMeshAgent.SetDestination(position);
     }
 
     private void OnDestroy()
@@ -71,19 +75,10 @@ public class BattleEntity : MonoBehaviour
 
     private void Update()
     {
+        return;
+
         if (_currentState == BattleEntityState.Waiting)
             return;
-
-        if (_currentState == BattleEntityState.Prep)
-        {
-            if (Vector3.Distance(transform.position, CurrentMoveTarget) < 0.25f)
-            {
-                _navMeshAgent.isStopped = true;
-                BattleDirector.Instance.OnPreperationComplete();
-                _currentState = BattleEntityState.Waiting;
-                return;
-            }
-        }
 
         if (CurrentCombatTarget == null)
         {

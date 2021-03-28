@@ -1,21 +1,80 @@
+using System;
 using System.Collections;
+using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class BattleDirector : MonoBehaviour
 {
     public static BattleDirector Instance;
-    [SerializeField] private BattleField _battleField;
+    [SerializeField] private SpawnPoint[] _playerSpawnPoints = default;
+    [SerializeField] private SpawnPoint[] _enemySpawnPoints = default;
+    [SerializeField] private float _spawnBackupDistance = 10f;
+    [SerializeField] private float _stageTransitionDistance = 5f;
+    private List<BattleEntity> _playerCharacters;
+    private int _currentStage = 0;
 
     [Header("Debug")]
     [SerializeField] private List<CharacterSpawnTemplate> playerCharacters = default;
     [SerializeField] private MissionTemplate _missionTemplate = default;
 
-    private int _currentStage = 0;
-    private int _remainingStageEnemies = 0;
-    private int _remainingTotalEnemies = 0;
-    private int _preparingCharacters = 0;
+    private void Start()
+    {
+        Instance = this;
 
+        _playerCharacters = SpawnCharacters(playerCharacters, BattleEntityTeam.Player);
+        PositionCharacters(_playerCharacters, _playerSpawnPoints, 0);
+
+        SetupStage(_currentStage);
+    }
+
+    private void SetupStage(int stage)
+    {
+        var enemyCharacters = SpawnCharacters(_missionTemplate.stages[stage].MissionSpawns, BattleEntityTeam.Enemy);
+        PositionCharacters(enemyCharacters, _enemySpawnPoints, 0);
+    }
+
+    private List<BattleEntity> SpawnCharacters(List<CharacterSpawnTemplate> spawnTemplates, BattleEntityTeam team)
+    {
+        var result = new List<BattleEntity>();
+
+        foreach (var spawnTemplate in spawnTemplates)
+        {
+            var characterTemplate = spawnTemplate.CharacterTemplate;
+            BattleEntity newEntity = Instantiate(characterTemplate.Prefab, transform);
+            result.Add(newEntity);
+            newEntity.Populate(characterTemplate, team);
+        }
+
+        return result;
+    }
+
+    private void PositionCharacters(List<BattleEntity> characters, SpawnPoint[] spawnPoints, int stage)
+    {
+        var sortedCharacters = characters.OrderBy(x => x.CharacterTemplate.RowPriority).ToList();
+
+        int index = 0;
+        foreach (var character in sortedCharacters)
+        {
+            if (index < spawnPoints.Length)
+            {
+                var spawnPoint = spawnPoints[index];
+                Vector3 destination = spawnPoint.transform.position + transform.position + Vector3.right * _stageTransitionDistance * stage;
+                Vector3 position = destination + -spawnPoint.transform.forward * _spawnBackupDistance;
+
+                character.transform.position = position;
+                character.GetIntoPosition(destination);
+            }
+            else
+            {
+                Debug.LogWarning("Trying to place more characters than there are spawn points");
+                break;
+            }
+            index++;
+        }
+    }
+
+    /*
     void Start()
     {
         if (_battleField == null)
@@ -143,6 +202,16 @@ public class BattleDirector : MonoBehaviour
             {
                 SetupStage(_currentStage);
             }
+        }
+    }*/
+
+    private void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.yellow;
+        for (int i = 0; i < 3; i++)
+        {
+            Vector3 position = transform.position + Vector3.right * _stageTransitionDistance * i;
+            Gizmos.DrawWireSphere(position, 1f);
         }
     }
 }

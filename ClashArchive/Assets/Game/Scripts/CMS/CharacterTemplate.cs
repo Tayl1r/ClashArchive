@@ -2,11 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum CharacterRow
-{
-    Front, Middle, Back, Boss
-}
-
 [System.Serializable]
 public class BaseStats
 {
@@ -38,8 +33,8 @@ public class CharacterTemplate : ScriptableObject
     [SerializeField] private BattleEntity _prefab = default;
     public BattleEntity Prefab { get { return _prefab; } }
 
-    [SerializeField] private CharacterRow _characterRow = default;
-    public CharacterRow CharacterRow { get { return _characterRow; } }
+    [SerializeField] private int _rowPriority = default;
+    public int RowPriority { get { return _rowPriority; } }
 
     [Header("Statistics")]
     [SerializeField] private BaseStats _characterStats = default;

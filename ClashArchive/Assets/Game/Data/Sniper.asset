@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _characterName: Peko
   _prefab: {fileID: 8779650248224243643, guid: dca08c0d793ea154585b5d0f087d0763, type: 3}
-  _characterRow: 2
+  _rowPriority: 5
   _characterStats:
     Health: 1500
     Attack: 300
