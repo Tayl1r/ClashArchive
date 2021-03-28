@@ -7,40 +7,32 @@ using UnityEngine;
 public class BattleDirector : MonoBehaviour
 {
     public static BattleDirector Instance;
-       
-    [Tooltip("This should be consistent between stages")]
-    [SerializeField] private BattleFieldTheatre _playerSpawnPoints = default;
-
-    [Header("Stage Setup")]
-    [SerializeField] private List<BattleFieldTheatre> _theatres = default;
+    [SerializeField] private SpawnPoint[] _playerSpawnPoints = default;
+    [SerializeField] private SpawnPoint[] _enemySpawnPoints = default;
+    [SerializeField] private float _spawnBackupDistance = 10f;
+    [SerializeField] private float _stageTransitionDistance = 5f;
     private List<BattleEntity> _playerCharacters;
-    
+    private int _currentStage = 0;
 
     [Header("Debug")]
     [SerializeField] private List<CharacterSpawnTemplate> playerCharacters = default;
     [SerializeField] private MissionTemplate _missionTemplate = default;
-
-    private int _currentStage = 0;
     private int _preparingCharacters;
 
     private void Start()
     {
         Instance = this;
+
         _playerCharacters = SpawnCharacters(playerCharacters, BattleEntityTeam.Player);
+        PositionCharacters(_playerCharacters, _playerSpawnPoints, 0);
+
         SetupStage(_currentStage);
     }
 
     private void SetupStage(int stage)
     {
-        if (stage >= _theatres.Count)
-            throw new Exception("More mission stages than the level supports");
-
-        _playerSpawnPoints.transform.position = _theatres[stage].transform.position;
-        BattleFieldTheatre theatre = _theatres[stage];
-        PositionCharacters(_playerCharacters, _playerSpawnPoints.SpawnPoints, 0);
-
         var enemyCharacters = SpawnCharacters(_missionTemplate.stages[stage].MissionSpawns, BattleEntityTeam.Enemy);
-        PositionCharacters(enemyCharacters, theatre.SpawnPoints, 0);
+        PositionCharacters(enemyCharacters, _enemySpawnPoints, 0);
     }
 
     private List<BattleEntity> SpawnCharacters(List<CharacterSpawnTemplate> spawnTemplates, BattleEntityTeam team)
@@ -226,16 +218,13 @@ public class BattleDirector : MonoBehaviour
         }
     }*/
 
-
-
-    private void OnDrawGizmos()
+    private void OnDrawGizmosSelected()
     {
-        if (_theatres == null)
-            return;
-
         Gizmos.color = Color.yellow;
-        foreach (var theatre in _theatres)
-            if (theatre != null)
-                Gizmos.DrawWireSphere(theatre.transform.position, 1f);
+        for (int i = 0; i < 3; i++)
+        {
+            Vector3 position = transform.position + Vector3.right * _stageTransitionDistance * i;
+            Gizmos.DrawWireSphere(position, 1f);
+        }
     }
 }
